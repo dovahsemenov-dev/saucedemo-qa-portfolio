@@ -20,6 +20,8 @@ def driver():
         options.add_argument("--headless=new")
     options.add_argument("--window-size=1920,1080")
     options.add_argument("--disable-gpu")
+    # Ждём только DOMContentLoaded — остальное отслеживаем явными ожиданиями в тестах.
+    options.page_load_strategy = "eager"
 
     # Драйвер скачивается встроенным Selenium Manager, webdriver-manager не нужен.
     driver = webdriver.Chrome(options=options)

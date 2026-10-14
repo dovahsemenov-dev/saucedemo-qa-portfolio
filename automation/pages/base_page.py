@@ -20,8 +20,8 @@ class BasePage:
         self.wait = WebDriverWait(driver, 15)
 
     def open(self, url, wait_for=None):
-        """Открывает страницу; при медленном стенде повторяет загрузку один раз."""
-        for attempt in range(2):
+        """Открывает страницу; при медленном стенде повторяет загрузку (до 3 раз)."""
+        for attempt in range(3):
             try:
                 self.driver.get(url)
             except TimeoutException:
@@ -32,7 +32,7 @@ class BasePage:
                 self.find(wait_for)
                 return self
             except TimeoutException:
-                if attempt == 1:
+                if attempt == 2:
                     raise
         return self
 
