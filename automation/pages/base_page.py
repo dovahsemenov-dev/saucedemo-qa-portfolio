@@ -49,17 +49,35 @@ class BasePage:
     def click_until(self, locator, condition, attempts=3):
         """Кликает и ждёт ожидаемого эффекта (перехода, сообщения об ошибке).
 
-        На медленном стенде клик, сделанный раньше готовности приложения,
-        может не сработать — тогда повторяем клик вместо time.sleep.
+        На медленном стенде клик может не сработать или сам переход может
+        перезагрузить страницу — тогда повторяем клик вместо time.sleep.
         """
         for attempt in range(attempts):
-            self.click(locator)
             try:
+                self.click(locator)
                 self.wait.until(condition)
                 return
             except TimeoutException:
                 if attempt == attempts - 1:
                     raise
+
+    def wait_stable(self, locator):
+        """Ждём, пока элемент перестанет двигаться (например, доедет анимация меню).
+
+        WebDriverWait опрашивает элемент каждые 0.5 с: два подряд одинаковых
+        положения означают, что анимация закончилась и клик попадёт в цель.
+        """
+        previous = {}
+
+        def stable(_):
+            rect = self.driver.find_element(*locator).rect
+            current = (round(rect["x"]), round(rect["y"]))
+            if previous.get("pos") == current:
+                return True
+            previous["pos"] = current
+            return False
+
+        self.wait.until(stable)
 
     def card_by_name(self, list_locator, name_locator, name):
         """Карточка с нужным названием из списка; False, пока список не отрисован."""
@@ -101,5 +119,7 @@ class BasePage:
 
     def logout(self):
         self.click_until(self.MENU_BUTTON, EC.visibility_of_element_located(self.LOGOUT_LINK))
+        # Бургер-меню выезжает анимацией: кликать по ссылке можно только после неё.
+        self.wait_stable(self.LOGOUT_LINK)
         # После выхода возвращаемся на страницу логина без адреса inventory.
         self.click_until(self.LOGOUT_LINK, lambda _: "inventory" not in self.driver.current_url)

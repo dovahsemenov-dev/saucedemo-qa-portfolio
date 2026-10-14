@@ -20,8 +20,10 @@ def driver():
         options.add_argument("--headless=new")
     options.add_argument("--window-size=1920,1080")
     options.add_argument("--disable-gpu")
-    # Ждём только DOMContentLoaded — остальное отслеживаем явными ожиданиями в тестах.
-    options.page_load_strategy = "eager"
+    # Стратегия загрузки по умолчанию (normal): saucedemo — React SPA, и трогать
+    # его можно только после полной загрузки. При стратегии eager на медленном
+    # стенде клики и ввод текста теряются — страница ещё грузится, и события
+    # не доходят до React. Явные ожидания элементов в тестах остаются.
 
     # Драйвер скачивается встроенным Selenium Manager, webdriver-manager не нужен.
     driver = webdriver.Chrome(options=options)
