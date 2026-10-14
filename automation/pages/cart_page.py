@@ -18,8 +18,7 @@ class CartPage(BasePage):
     CONTINUE_SHOPPING = (By.CSS_SELECTOR, "[data-test=continue-shopping]")
 
     def open(self):
-        super().open(f"{BASE_URL}/cart.html")
-        self.find(self.CART_LIST)
+        super().open(f"{BASE_URL}/cart.html", wait_for=self.CART_LIST)
         return self
 
     def item_names(self):

@@ -17,3 +17,35 @@ SELECT users.username, cart.product_id, cart.quantity
 FROM cart 
 JOIN users ON cart.user_id = users.id 
 WHERE users.username = 'standard_user';
+
+6.Количество товаров в каждой категории: GROUP BY по полю категории
+SELECT category, COUNT(*) AS products_count
+FROM products
+GROUP BY category;
+
+7.Категории с числом товаров больше одного: HAVING после GROUP BY
+SELECT category, COUNT(*) AS products_count
+FROM products
+GROUP BY category
+HAVING COUNT(*) > 1;
+
+8.Пользователи, у которых уже есть товары в корзине: подзапрос в WHERE
+SELECT username
+FROM users
+WHERE id IN (SELECT DISTINCT user_id FROM cart);
+
+9.Заказы с суммой выше средней: подзапрос как выражение в сравнении
+SELECT order_id, total_amount
+FROM orders
+WHERE total_amount > (SELECT AVG(total_amount) FROM orders);
+
+10.Товары из корзины standard_user с их ценой и суммой позиции: JOIN + вычисляемое поле
+SELECT p.product_name,
+       p.price,
+       c.quantity,
+       p.price * c.quantity AS position_total
+FROM cart c
+JOIN products p ON p.id = c.product_id
+JOIN users u ON u.id = c.user_id
+WHERE u.username = 'standard_user'
+ORDER BY position_total DESC;

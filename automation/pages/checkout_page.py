@@ -24,8 +24,7 @@ class CheckoutPage(BasePage):
     COMPLETE_HEADER = (By.CSS_SELECTOR, "[data-test=complete-header]")
 
     def open(self):
-        super().open(f"{BASE_URL}/checkout-step-one.html")
-        self.find(self.FIRST_NAME)
+        super().open(f"{BASE_URL}/checkout-step-one.html", wait_for=self.FIRST_NAME)
         return self
 
     def fill_customer(self, first_name, last_name, postal_code):

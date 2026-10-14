@@ -17,8 +17,7 @@ class InventoryPage(BasePage):
     BACK_TO_PRODUCTS = (By.CSS_SELECTOR, "[data-test=back-to-products]")
 
     def open(self):
-        super().open(f"{BASE_URL}/inventory.html")
-        self.find(self.PRODUCT_LIST)
+        super().open(f"{BASE_URL}/inventory.html", wait_for=self.PRODUCT_LIST)
         return self
 
     # --- Каталог ---

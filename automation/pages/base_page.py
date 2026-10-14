@@ -1,5 +1,6 @@
 """Общая база Page Object: явные ожидания, базовые действия и шапка сайта."""
 
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
@@ -16,10 +17,23 @@ class BasePage:
 
     def __init__(self, driver):
         self.driver = driver
-        self.wait = WebDriverWait(driver, 10)
+        self.wait = WebDriverWait(driver, 15)
 
-    def open(self, url):
-        self.driver.get(url)
+    def open(self, url, wait_for=None):
+        """Открывает страницу; при медленном стенде повторяет загрузку один раз."""
+        for attempt in range(2):
+            try:
+                self.driver.get(url)
+            except TimeoutException:
+                pass  # страница не успела загрузиться — проверяем ниже по локатору
+            if wait_for is None:
+                return self
+            try:
+                self.find(wait_for)
+                return self
+            except TimeoutException:
+                if attempt == 1:
+                    raise
         return self
 
     def find(self, locator):

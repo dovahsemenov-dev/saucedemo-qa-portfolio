@@ -14,8 +14,7 @@ class LoginPage(BasePage):
     ERROR_MESSAGE = (By.CSS_SELECTOR, "[data-test=error]")
 
     def open(self):
-        super().open(BASE_URL)
-        self.find(self.USERNAME)
+        super().open(BASE_URL, wait_for=self.USERNAME)
         return self
 
     def login(self, username, password):
