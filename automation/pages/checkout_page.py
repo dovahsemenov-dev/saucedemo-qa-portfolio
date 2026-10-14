@@ -1,6 +1,8 @@
 """Оформление заказа: шаг 1 (данные), шаг 2 (итог) и финальный экран."""
 
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
 
 from config import BASE_URL
 from pages.base_page import BasePage
@@ -40,7 +42,11 @@ class CheckoutPage(BasePage):
         return self
 
     def continue_checkout(self):
-        self.click(self.CONTINUE_BUTTON)
+        # Успех — переход к итогам, ошибка валидации — остаёмся на форме с текстом ошибки.
+        self.click_until(self.CONTINUE_BUTTON, EC.any_of(
+            EC.url_contains("checkout-step-two"),
+            EC.visibility_of_element_located(self.ERROR_MESSAGE),
+        ))
         return self
 
     def error_text(self):
@@ -67,7 +73,7 @@ class CheckoutPage(BasePage):
         return self._money(self.text(self.TOTAL))
 
     def finish(self):
-        self.click(self.FINISH_BUTTON)
+        self.click_until(self.FINISH_BUTTON, EC.visibility_of_element_located(self.COMPLETE_HEADER))
         return self
 
     def confirmation_text(self):

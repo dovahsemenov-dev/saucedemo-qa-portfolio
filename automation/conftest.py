@@ -32,7 +32,7 @@ def driver():
 @pytest.fixture
 def logged_in(driver):
     """Авторизованный стандартным пользователем браузер (открыт каталог)."""
-    LoginPage(driver).open().login(STANDARD_USER, PASSWORD)
+    LoginPage(driver).login_as_standard_user()
     return driver
 
 

@@ -46,6 +46,28 @@ class BasePage:
         """Ждём, пока элемент станет кликабельным, и кликаем."""
         self.wait.until(EC.element_to_be_clickable(locator)).click()
 
+    def click_until(self, locator, condition, attempts=3):
+        """Кликает и ждёт ожидаемого эффекта (перехода, сообщения об ошибке).
+
+        На медленном стенде клик, сделанный раньше готовности приложения,
+        может не сработать — тогда повторяем клик вместо time.sleep.
+        """
+        for attempt in range(attempts):
+            self.click(locator)
+            try:
+                self.wait.until(condition)
+                return
+            except TimeoutException:
+                if attempt == attempts - 1:
+                    raise
+
+    def card_by_name(self, list_locator, name_locator, name):
+        """Карточка с нужным названием из списка; False, пока список не отрисован."""
+        for card in self.driver.find_elements(*list_locator):
+            if card.find_element(*name_locator).text == name:
+                return card
+        return False
+
     def type(self, locator, text):
         element = self.find(locator)
         element.clear()
@@ -74,10 +96,10 @@ class BasePage:
         self.wait.until(lambda _: self.cart_count() == count)
 
     def open_cart(self):
-        self.click(self.CART_LINK)
+        # После клика ждём адрес корзины: на медленном стенде SPA-переход может запаздывать.
+        self.click_until(self.CART_LINK, EC.url_contains("cart.html"))
 
     def logout(self):
-        self.click(self.MENU_BUTTON)
-        self.click(self.LOGOUT_LINK)
-        # После выхода мы возвращаемся на страницу логина без адреса inventory.
-        self.wait.until(lambda _: "inventory" not in self.driver.current_url)
+        self.click_until(self.MENU_BUTTON, EC.visibility_of_element_located(self.LOGOUT_LINK))
+        # После выхода возвращаемся на страницу логина без адреса inventory.
+        self.click_until(self.LOGOUT_LINK, lambda _: "inventory" not in self.driver.current_url)
