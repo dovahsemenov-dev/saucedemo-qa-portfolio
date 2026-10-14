@@ -1,6 +1,11 @@
 """Константы проекта: адрес стенда, учётные данные и тестовые пользователи."""
 
+import os
+
 BASE_URL = "https://www.saucedemo.com"
+
+# Таймаут явных ожиданий; можно увеличить переменной окружения UI_TIMEOUT (в CI задано 30).
+TIMEOUT = int(os.getenv("UI_TIMEOUT", "15"))
 
 PASSWORD = "secret_sauce"
 

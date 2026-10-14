@@ -5,10 +5,12 @@ import pytest
 from pages.cart_page import CartPage
 from pages.inventory_page import InventoryPage
 
+pytestmark = pytest.mark.ui
+
+
 BACKPACK = "Sauce Labs Backpack"
 BIKE_LIGHT = "Sauce Labs Bike Light"
 ONESIE = "Sauce Labs Onesie"
-
 
 @pytest.mark.smoke
 def test_cart_badge_shows_one_after_adding_product(logged_in):
@@ -18,7 +20,6 @@ def test_cart_badge_shows_one_after_adding_product(logged_in):
     inventory.wait_cart_count(1)
 
     assert inventory.cart_count() == 1
-
 
 def test_adding_several_products_updates_badge_and_cart(logged_in):
     inventory = InventoryPage(logged_in)
@@ -35,7 +36,6 @@ def test_adding_several_products_updates_badge_and_cart(logged_in):
     assert sorted(cart.item_names()) == expected
     assert cart.quantities() == ["1", "1", "1"]
 
-
 def test_remove_product_from_cart(logged_in):
     inventory = InventoryPage(logged_in)
     inventory.add_to_cart(BACKPACK)
@@ -49,7 +49,6 @@ def test_remove_product_from_cart(logged_in):
 
     assert cart.item_names() == [BIKE_LIGHT]
     assert cart.cart_count() == 1
-
 
 def test_cart_is_kept_after_navigation(logged_in):
     inventory = InventoryPage(logged_in)

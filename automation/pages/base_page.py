@@ -5,6 +5,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
+from config import TIMEOUT
+
 
 class BasePage:
     # Шапка повторяется на всех страницах после входа в магазин.
@@ -17,7 +19,7 @@ class BasePage:
 
     def __init__(self, driver):
         self.driver = driver
-        self.wait = WebDriverWait(driver, 15)
+        self.wait = WebDriverWait(driver, TIMEOUT)
 
     def open(self, url, wait_for=None):
         """Открывает страницу; при медленном стенде повторяет загрузку (до 3 раз)."""

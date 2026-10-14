@@ -6,11 +6,13 @@ from pages.cart_page import CartPage
 from pages.checkout_page import CheckoutPage
 from pages.inventory_page import InventoryPage
 
+pytestmark = pytest.mark.ui
+
+
 BACKPACK = "Sauce Labs Backpack"
 BIKE_LIGHT = "Sauce Labs Bike Light"
 
 CUSTOMER = ("John", "Doe", "12345")
-
 
 @pytest.mark.smoke
 def test_full_checkout_flow(logged_in):
@@ -25,7 +27,6 @@ def test_full_checkout_flow(logged_in):
     checkout.continue_checkout().finish()
 
     assert checkout.confirmation_text() == "Thank you for your order!"
-
 
 @pytest.mark.parametrize("fields_to_fill, expected_error", [
     ([], "First Name is required"),
@@ -45,7 +46,6 @@ def test_empty_customer_fields_are_rejected(logged_in, fields_to_fill, expected_
     checkout.continue_checkout()
 
     assert checkout.error_text().endswith(expected_error)
-
 
 def test_overview_totals_match_cart_prices(logged_in):
     inventory = InventoryPage(logged_in)

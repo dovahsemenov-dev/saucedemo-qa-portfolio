@@ -6,19 +6,20 @@ from config import PASSWORD, PROBLEM_USER
 from pages.inventory_page import InventoryPage
 from pages.login_page import LoginPage
 
+pytestmark = pytest.mark.ui
+
+
 BACKPACK = "Sauce Labs Backpack"
 
 # Значения по умолчанию и ожидаемый порядок для каждой сортировки.
 NAME_SORTS = [("az", False), ("za", True)]
 PRICE_SORTS = [("lohi", False), ("hilo", True)]
 
-
 def test_catalog_shows_six_products(logged_in):
     page = InventoryPage(logged_in)
 
     assert len(page.product_names()) == 6
     assert len(page.product_prices()) == 6
-
 
 @pytest.mark.parametrize("sort_value, reverse", NAME_SORTS)
 def test_sort_by_name(logged_in, sort_value, reverse):
@@ -29,7 +30,6 @@ def test_sort_by_name(logged_in, sort_value, reverse):
     page.wait_product_names(expected)
 
     assert page.product_names() == expected
-
 
 @pytest.mark.parametrize("sort_value, reverse", PRICE_SORTS)
 def test_sort_by_price(logged_in, sort_value, reverse):
@@ -43,7 +43,6 @@ def test_sort_by_price(logged_in, sort_value, reverse):
 
     assert [float(p.strip("$")) for p in page.product_prices()] == pytest.approx(expected_prices)
 
-
 def test_product_page_matches_catalog(logged_in):
     page = InventoryPage(logged_in)
     catalog_price = page.product_price(BACKPACK)
@@ -56,7 +55,6 @@ def test_product_page_matches_catalog(logged_in):
     page.back_to_products()
     page.wait.until(lambda _: len(page.product_names()) == 6)
     assert len(page.product_names()) == 6
-
 
 @pytest.mark.xfail(
     reason="Известный дефект BUG-01: у всех товаров problem_user одно и то же изображение, "

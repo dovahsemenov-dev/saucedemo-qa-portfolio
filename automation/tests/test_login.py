@@ -5,6 +5,8 @@ import pytest
 from config import LOCKED_OUT_USER, PASSWORD, STANDARD_USER
 from pages.login_page import LoginPage
 
+pytestmark = pytest.mark.ui
+
 
 @pytest.mark.smoke
 def test_successful_login_standard_user(driver):
@@ -12,13 +14,11 @@ def test_successful_login_standard_user(driver):
 
     assert "inventory.html" in page.driver.current_url
 
-
 def test_locked_out_user_sees_error(driver):
     page = LoginPage(driver).open().login(LOCKED_OUT_USER, PASSWORD)
 
     assert page.is_error_visible()
     assert "locked out" in page.error_text().lower()
-
 
 @pytest.mark.parametrize("username, password, expected_error", [
     ("", "secret_sauce", "Username is required"),
@@ -31,7 +31,6 @@ def test_negative_login_shows_expected_error(driver, username, password, expecte
 
     assert page.is_error_visible()
     assert expected_error in page.error_text()
-
 
 def test_logout_through_menu(logged_in):
     page = LoginPage(logged_in)
